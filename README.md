@@ -1,6 +1,9 @@
-# GUAP
-Generalized Universal Adversarial Perturbations
+# GUAP: Generalized Universal Adversarial Perturbations
 
+![license](https://img.shields.io/github/license/JordanFrecon/bregmanet)
+![release](https://img.shields.io/github/v/release/JordanFrecon/bregmanet?include_prereleases
+
+[GUAP](https://github.com/JordanFrecon/guap) is a PyTorch library providing generalized universal attacks mentionned in the following article.
 
 Jordan Patracone, Paul Viallard, Emilie Morvant, Gilles Gasso, Amaury Habrard. **A Theoretically Grounded Extension of Universal Attacks from the Attacker's Viewpoint**. European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases, Sep 2024, Vilnius, Lithuania. [⟨hal-03615461v3⟩](https://hal.science/hal-03615461v3)
 
@@ -14,4 +17,25 @@ Inside models/Pytorch_CIFAR10, run the following command line
 You may also require to install pytorch lightning, i.e.,
 
 	pip install pytorch-lightning
-	
+
+
+## Citation
+
+If you use this package, please cite the following work:
+
+```
+@inproceedings{patracone:hal-03615461,
+  TITLE = {{A Theoretically Grounded Extension of Universal Attacks from the Attacker's Viewpoint}},
+  AUTHOR = {Patracone, Jordan and Viallard, Paul and Morvant, Emilie and Gasso, Gilles and Habrard, Amaury and Canu, St{\'e}phane},
+  URL = {https://hal.science/hal-03615461},
+  BOOKTITLE = {{European Conference on Machine Learning and Principles and Practice of Knowledge Discovery in Databases}},
+  ADDRESS = {Vilnius, Lithuania},
+  YEAR = {2024},
+  MONTH = Sep,
+  KEYWORDS = {adversarial ; Generalization bounds},
+  PDF = {https://hal.science/hal-03615461v3/file/ECML_2024___Semi_Universal_Perturbations-1.pdf},
+  HAL_ID = {hal-03615461},
+  HAL_VERSION = {v3},
+}
+
+```
