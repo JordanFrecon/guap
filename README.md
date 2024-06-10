@@ -1,7 +1,6 @@
 # GUAP: Generalized Universal Adversarial Perturbations
 
 ![license](https://img.shields.io/github/license/JordanFrecon/bregmanet)
-![release](https://img.shields.io/github/v/release/JordanFrecon/bregmanet?include_prereleases
 
 [GUAP](https://github.com/JordanFrecon/guap) is a PyTorch library providing generalized universal attacks mentionned in the following article.
 
