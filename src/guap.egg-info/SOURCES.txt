@@ -1,0 +1,8 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/guap.egg-info/PKG-INFO
+src/guap.egg-info/SOURCES.txt
+src/guap.egg-info/dependency_links.txt
+src/guap.egg-info/top_level.txt
