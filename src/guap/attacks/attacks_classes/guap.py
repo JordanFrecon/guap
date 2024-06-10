@@ -2,7 +2,7 @@ from attacks.utils import *
 from utils.optimization import *
 from tqdm import trange
 from attacks.utils import bounded_cross_entropy
-
+from torchattacks import Attack
 
 class GUAPAttackSetting(AttackSetting):
     """ Special class of GUAP attacks """
@@ -36,10 +36,10 @@ class GUAP(Attack):
         trials (int): number of trials to find the best unsupervised attacks to unseen examples. (Default: 10)
         batch_size (int): batch size used to compute the gradients. Larger values speed up the computation at the cost
                           of a higher memory storage. It has no impact on the results. (Default: len(data_train)).
-        optimizer (str): choice of nonconvex solver. (default: 'prox_sarah')
-                        - prox_spiderboost
-                        - prox_sgd
-                        - prox_sarah
+        optimizer (str): choice of nonconvex solver. (default: 'vmilan')
+                        - vmilan
+                        - saga
+                        - saga-me
 
 
     Shape:
@@ -78,11 +78,7 @@ class GUAP(Attack):
 
         self.initialize_optimizer(dataset)
 
-        if self.optimizer == 'gd':
-            self.opt_GD(model=model)
-        elif self.optimizer == 'sgd':
-            self.opt_SGD(model=model)
-        elif self.optimizer == 'vmilan':
+        if self.optimizer == 'vmilan':
             self.opt_vMILAN(model=model)
         elif self.optimizer == 'saga':
             self.opt_SAGA(model=model)
@@ -193,89 +189,6 @@ class GUAP(Attack):
         self.bar = trange(int(opt.num_epochs)) if opt.verbose else range(int(opt.num_epochs))
 
     """ ----------------------- Below: various optimizers ----------------------- """
-
-    def opt_GD(self, model):
-        """ Gradient Based Optimizer"""
-        d = self.perturbations
-        self.model = model
-        for iteration in self.bar:
-
-            # Go through all samples
-            loss_full = 0
-            fr = 0
-            d.grad = torch.zeros_like(d)
-
-            for x, y in self.data_loader:
-                # Load data
-                x = x.to(device=self.device)
-                y = y.to(device=self.device)
-
-                # Prepare computation graph
-                d.detach()
-                d.requires_grad = True
-
-                # Compute loss and accumulate gradients
-                loss = self.get_loss(x, y, d)
-                loss.backward()
-
-                with torch.no_grad():
-                    loss_full += float(loss)
-                    # fr += float(model(x).argmax(dim=1).ne(model(x + dv).argmax(dim=1)).sum()) / (n_img )
-
-            # Forward-Backward step
-            with torch.no_grad():
-
-                d = self.projection(d - self.opt_setting.lr * d.grad)
-
-                # Keep track of loss and fooling rate
-                self.optim_meter.update(loss=loss_full, fooling_rate=fr)
-
-            self.bar.set_description('EPOCH: %d - fooling rate: %.2f' % (iteration + 1, 100 * fr))
-
-        # Assign the perturbations and close display
-        self.perturbations = d.detach()
-
-    def opt_SGD(self, model):
-        """ Stochastic Gradient Based Optimizer """
-        d = self.perturbations
-        self.model = model
-        # for iteration in self.bar:
-
-        # Go through all samples
-        # loss_full = 0
-        # fr = 0
-        iteration = 0
-        for x, y in self.data_loader:
-
-            # Load data
-            x = x.to(device=self.device)
-            y = y.to(device=self.device)
-
-            # Prepare computation graph
-            d.detach()
-            d.requires_grad = True
-            d.grad = torch.zeros_like(d)
-
-            # Compute loss and accumulate gradients
-            loss = self.get_loss(x, y, d)
-            loss.backward()
-
-            with torch.no_grad():
-                loss_full = float(loss)
-                fr = 0
-                d = self.projection(d - self.opt_setting.lr * d.grad)
-
-            with torch.no_grad():
-                self.optim_meter.update(loss=loss_full, fooling_rate=fr)
-                self.bar.set_description('EPOCH: %d - fooling rate: %.2f' % (iteration, 100 * fr))
-                self.bar.update()
-                iteration += 1
-                if iteration > self.bar.__len__():
-                    break
-
-        # Assign the perturbations and close display
-        self.perturbations = d.detach()
-        return
 
     def opt_vMILAN(self, model):
         """ Gradient Based Optimizer"""
